@@ -92,11 +92,6 @@ VM_DELETE=
 NUM_NVME_DRIVES_PER_WORKER=0
 
 HEAD_INSTANCE_TYPE=
-WORKER_INSTANCE_TYPE=
-GCP_HEAD_INSTANCE_TYPE=n2-standard-2
-GCP_WORKER_INSTANCE_TYPE=n2-standard-4
-GCP_API_INSTANCE_TYPE=n2-standard-8
-
 
 ENTERPRISE_DOWNLOAD_URL=https://nexus.hops.works/repository
 
@@ -131,6 +126,9 @@ HEAD_NODE_BOOT_SIZE=40
 DATA_NODE_BOOT_SIZE=250
 API_NODE_BOOT_SIZE=100
 
+GCP_HEAD_INSTANCE_TYPE=n2-standard-2
+GCP_WORKER_INSTANCE_TYPE=n2-standard-4
+GCP_API_INSTANCE_TYPE=n2-standard-8
 
 RAW_SSH_KEY="${USER}:$(cat ~/.ssh/id_rsa.pub)"
 ESCAPED_SSH_KEY="$RAW_SSH_KEY"
@@ -166,9 +164,6 @@ VM_GPU=gpu
 AZ_HEAD_INSTANCE_TYPE=Standard_D2s_v3
 AZ_WORKER_INSTANCE_TYPE=Standard_E8s_v4
 AZ_API_INSTANCE_TYPE=Standard_D8s_v4
-
-
-VM_SIZE=Standard_E8s_v3
 
 AZ_IMAGE=Canonical:UbuntuServer:18.04-LTS:latest
 OS_VERSION=18
@@ -1553,42 +1548,37 @@ _az_precreate()
 	#     read DATA_DISK_SIZES_GB
 	# fi
     fi
-#    DATA_DISK_SIZE=$DATA_DISK_SIZES_GB    
     BOOT_SIZE=$BOOT_SIZE_GBS
 }
 
 az_create_gpu()
 {
-    #    VM_TYPE=$API_INSTANCE_TYPE
     set_api_instance_type
+    VM_TYPE=$MACHINE_TYPE
     PPG=
     ACC_NETWORKING="$AZ_NETWORKING"
     if [ "$AZURE_PPG" != "" ] ; then
        PPG="--ppg=$AZURE_PPG"
     fi
     PUBLIC_IP_ATTR="--public-ip-sku Standard"    
-    #AZ_ZONE=
     AZURE_ZONE="--zone $AZ_ZONE"    
     _az_create_vm $1
 }
 
 az_create_cpu()
 {
-#    VM_TYPE=$HEAD_INSTANCE_TYPE
     PPG=
     if [ "$AZURE_PPG" != "" ] ; then
         PPG="--ppg=$AZURE_PPG"
     fi
     ACC_NETWORKING="$AZ_NETWORKING"
     if [ "$1" == "head" ] ; then
-        VM_TYPE=$HEAD_INSTANCE_TYPE
+        VM_TYPE=$AZ_HEAD_INSTANCE_TYPE
 	ACC_NETWORKING=
     elif [ "$1" == "worker" ] ; then
-        VM_TYPE=$WORKER_INSTANCE_TYPE
-    fi    
-    VM_TYPE=$VM_SIZE
+        VM_TYPE=$AZ_WORKER_INSTANCE_TYPE
+    fi 
     PUBLIC_IP_ATTR="--public-ip-sku Standard"
-    #AZ_ZONE="-z 3"
     AZURE_ZONE="--zone $AZ_ZONE"    
     _az_create_vm $1
 }
@@ -2154,10 +2144,6 @@ fi
 cloud_setup
 
 HEAD_GPU=0
-if [ "$HEAD_INSTANCE_TYPE" != "" ] ; then        
-    set_head_instance_type 
-fi
-
 if [ $INSTALL_ACTION -eq $INSTALL_CPU ] ; then
     set_name "cpu"
 elif [ $INSTALL_ACTION -eq $INSTALL_GPU ] ; then
