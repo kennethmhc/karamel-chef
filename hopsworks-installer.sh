@@ -924,8 +924,8 @@ while [ $# -gt 0 ]; do    # Until you run out of parameters . . .
 	-h|--help|-help)
             echo "usage: [sudo] ./$SCRIPTNAME "
 	    echo " [-h|--help]      help message"
-	    echo " [-i|--install-action community|cluster|purge] "
-	    echo "                 'community' installs a localhost RonDB cluster"
+	    echo " [-i|--install-action localhost|cluster|purge] "
+	    echo "                 'localhost' installs a localhost RonDB cluster"
 	    echo "                 'cluster' installs a multi-host RonDB cluster"
 	    echo "                 'purge' removes RonDB completely from all hosts"
 	    echo " [-cl|--clean]    removes the karamel installation"
@@ -933,7 +933,7 @@ while [ $# -gt 0 ]; do    # Until you run out of parameters . . .
 	    echo " [-nvme|--nvme num_disks] Number of NVMe disks on worker nodes (for NDB/HopsFS)"
 	    echo " [-c|--cloud      on-premises|gcp|aws|azure]"
 	    echo " [-w|--num-database-nodes    IP1,IP2,...,IPN|none] install on workers with IPs in supplied list (or none). Uses default mem/cpu/apis for the workers."
-	    echo " [-dc|--download-opensource-url url] downloads open-source binaries from this URL."
+	    echo " [-dc|--download-url url] downloads open-source binaries from this URL."
 	    echo " [-gs|--gem-server] Run a local gem server for chef-solo (for air-gapped installations)."
 	    echo " [-ni|--non-interactive)] skip license/terms acceptance and all confirmation screens."
             echo " [-r|--num-replicas num] specify the number of database replicas to use."            
@@ -964,7 +964,7 @@ while [ $# -gt 0 ]; do    # Until you run out of parameters . . .
 	-cl|--clean)
 	    CLEAN_INSTALL_DIR=1
 	    ;;
-	-dc|--download-community-url)
+	-dc|--download-url)
       	    shift
 	    DOWNLOAD_URL=$1
 	    ;;
